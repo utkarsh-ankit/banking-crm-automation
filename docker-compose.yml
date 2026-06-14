@@ -1,14 +1,37 @@
 version: '3.8'
 
+networks:
+  banking_network:
+    driver: bridge
+
+volumes:
+  n8n_storage:
+  qdrant_storage:
+
 services:
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: n8n-banking-crm
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_vector_db
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - banking_network
     restart: unless-stopped
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n_automation
     ports:
       - "5678:5678"
-    volumes:
-      - ./n8n_data:/home/node/.n8n
     environment:
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - GENERIC_TIMEZONE=America/Phoenix
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    networks:
+      - banking_network
+    depends_on:
+      - qdrant
+    restart: unless-stopped
