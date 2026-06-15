@@ -1,5 +1,5 @@
 {
-  "name": "My workflow",
+  "name": "Banking CRM Cards",
   "nodes": [
     {
       "parameters": {
@@ -39,7 +39,9 @@
         0
       ],
       "id": "019250da-f33d-4d4c-9504-fc944a7f1a13",
-      "name": "AI Agent"
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000
     },
     {
       "parameters": {
@@ -49,14 +51,14 @@
       "typeVersion": 1.1,
       "position": [
         208,
-        176
+        208
       ],
       "id": "2ebdedf0-8b57-47ee-b708-a8548a5f0d89",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "KdFFpdNJ8CFpROck",
-          "name": "Google Gemini(PaLM) Api account 2"
+          "id": "iNaTkwUWwwYRB6vg",
+          "name": "Google Gemini(PaLM) Api account 3"
         }
       }
     },
@@ -152,109 +154,11 @@
       "name": "Switch"
     },
     {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolDescription": "Use this tool to search for banking compliance policies regarding expedited shipping fees and temporary address fraud verification requirements.",
-        "qdrantCollection": {
-          "__rl": true,
-          "value": "=banking_sops",
-          "mode": "id"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
-      "typeVersion": 1.3,
-      "position": [
-        288,
-        -256
-      ],
-      "id": "84fcd349-a95f-405e-b0f4-c3c17fe9251a",
-      "name": "Qdrant Vector Store",
-      "credentials": {
-        "qdrantApi": {
-          "id": "s3pptKvvFUqjc5xh",
-          "name": "Qdrant account"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -192,
-        608
-      ],
-      "id": "c708f16d-e05f-42cb-89dd-6f8c719e51c5",
-      "name": "When clicking ‘Execute workflow’"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "2a2ea396-80a5-4460-a133-85ede7eafe17",
-              "name": "sop_text",
-              "value": "STANDARD OPERATING PROCEDURE: EXPEDITED CARD REPLACEMENT Policy ID: CRM-SOP-092  Standard Tier Customers: Standard tier customers requesting an expedited replacement card to their primary billing address are subject to a $25.00 USD expedited shipping fee. If the customer is traveling and requesting shipment to a temporary address (e.g., a hotel), the $25.00 fee applies, and the agent MUST collect the Hotel Name, Room Number, and Checkout Date for fraud prevention.  Premium Tier Customers: Premium tier customers receive one (1) waived expedited shipping fee per calendar year. Shipping to temporary addresses requires the same fraud prevention data (Hotel Name, Room Number, Checkout Date).  VIP / Priority Concierge Customers: VIP customers have all expedited shipping fees waived automatically ($0.00). Replacement cards are shipped via Priority Overnight. No additional fraud checks are required for temporary addresses as VIPs utilize biometric app verification.",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        0,
-        608
-      ],
-      "id": "bd0a8399-5826-467c-8e83-eeea924b4aa1",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "qdrantCollection": {
-          "__rl": true,
-          "value": "=banking_sops",
-          "mode": "id"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
-      "typeVersion": 1.3,
-      "position": [
-        208,
-        608
-      ],
-      "id": "5f726df9-ab43-40c9-be12-1aabfa7b5087",
-      "name": "Qdrant Vector Store1",
-      "credentials": {
-        "qdrantApi": {
-          "id": "s3pptKvvFUqjc5xh",
-          "name": "Qdrant account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "typeVersion": 1.1,
-      "position": [
-        256,
-        464
-      ],
-      "id": "12d19c11-b2b3-466d-99f2-99648ab2a02f",
-      "name": "Default Data Loader"
-    },
-    {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        208,
+        160,
         800
       ],
       "id": "a5713cd7-054f-4c31-a6fc-64f3cd468354",
@@ -265,86 +169,6 @@
           "name": "Google Gemini(PaLM) Api account"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "a8e81a89-0043-4a60-b9ea-99005159ee26",
-              "leftValue": "={{ $json.waiver_count }}",
-              "rightValue": 1,
-              "operator": {
-                "type": "number",
-                "operation": "lt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        1024,
-        0
-      ],
-      "id": "3ddeaa1b-f6c1-4282-a430-eaa246c7a467",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "40e1eafd-3515-488c-9512-7de0cf84533f",
-              "name": "email_draft",
-              "value": "Good news! As a Premium member, we have applied your annual fee waiver. A replacement card is being shipped to you free of charge.",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1264,
-        -80
-      ],
-      "id": "a8244767-9b37-4c2c-b1ac-44a9a3324420",
-      "name": "Edit Fields1"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "762e2b29-fc32-4bd9-8c86-8cbdad620dee",
-              "name": "email_draft",
-              "value": "We received your replacement request. It looks like you've already utilized your free annual replacement. To expedite your new card, please pay the standard $25 replacement fee here: https://buy.stripe.com/mock-payment-link-123",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1264,
-        80
-      ],
-      "id": "496f1fc3-eb4d-47ed-9fbc-a881ca0bdf63",
-      "name": "Edit Fields2"
     },
     {
       "parameters": {
@@ -380,7 +204,7 @@
         "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"api_action\": \"create_shipment\",\n  \"reference_ticket\": \"{{ $('JavaScript Code').item.json.ticket_id }}\",\n  \"customer_tier\": \"{{ $('JavaScript Code').item.json.customer_tier }}\",\n  \"logistics\": {\n    \"carrier\": \"FedEx\",\n    \"shipping_speed\": \"{{ $('JavaScript Code').item.json.customer_tier === 'Premium' ? 'Priority_Overnight' : 'Standard_Ground' }}\",\n    \"signature_required\": true\n  }\n}",
+        "jsonBody": "={\n  \"api_action\": \"create_shipment\",\n  \"reference_ticket\": \"{{ $('Normalize Payload (JavaScript)').item.json.ticket_id }}\",\n  \"customer_tier\": \"{{ $('Normalize Payload (JavaScript)').item.json.customer_tier }}\",\n  \"logistics\": {\n    \"carrier\": \"FedEx\",\n    \"shipping_speed\": \"{{ $('Normalize Payload (JavaScript)').item.json.customer_tier === 'Premium' ? 'Priority_Overnight' : 'Standard_Ground' }}\",\n    \"signature_required\": true\n  }\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -395,7 +219,7 @@
     {
       "parameters": {
         "resource": "draft",
-        "subject": "=Re: Support Request - {{ $('JavaScript Code').item.json.ticket_id }}",
+        "subject": "=Re: Support Request - {{ $('Normalize Payload (JavaScript)').item.json.ticket_id }}",
         "message": "={{ JSON.parse($('AI Agent').first().json.output).draft_reply }}",
         "options": {}
       },
@@ -419,7 +243,7 @@
       "parameters": {
         "from": "+16235213727",
         "to": "+16235213727",
-        "message": "=Premium Alert: Your replacement card ({{ $('JavaScript Code').item.json.ticket_id }}) has been shipped via Priority Overnight.",
+        "message": "=Premium Alert: Your replacement card ({{ $('Normalize Payload (JavaScript)').item.json.ticket_id }}) has been shipped via Priority Overnight.",
         "options": {}
       },
       "type": "n8n-nodes-base.twilio",
@@ -463,7 +287,7 @@
           "value": "#agentic-stuff",
           "mode": "name"
         },
-        "text": "=*VIP ESCALATION* Ticket ID: {{ JSON.parse($json.output).ticket_id }} Tier: {{ $('JavaScript Code').item.json.customer_tier }} Message: {{ $('JavaScript Code').item.json.message }}",
+        "text": "=*VIP ESCALATION* Ticket ID: {{ JSON.parse($json.output).ticket_id }} Tier: {{ $('Normalize Payload (JavaScript)').item.json.customer_tier }} Message: {{ $('Normalize Payload (JavaScript)').item.json.message }}",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
@@ -484,27 +308,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT COUNT(*) AS waiver_count \nFROM transactions \nWHERE customer_id = 'TCK-9999' AND fee_waived = FALSE;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        848,
-        0
-      ],
-      "id": "40089cd4-ae87-4caf-80c2-ee3e56a9f35b",
-      "name": "Postgres",
-      "credentials": {
-        "postgres": {
-          "id": "AsKIkXNRo9n27gws",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "project": {
           "__rl": true,
           "value": "={{ $('Gmail Trigger').item.json.id }}",
@@ -515,7 +318,7 @@
           "value": "={{ $('Gmail Trigger').item.json.labels[2].id }}",
           "mode": "id"
         },
-        "summary": "=Support Request: {{ $('JavaScript Code').item.json.ticket_id }}",
+        "summary": "=Support Request: {{ $('Normalize Payload (JavaScript)').item.json.ticket_id }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.jira",
@@ -533,6 +336,142 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Premium\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
+      "name": "Normalize Payload (JavaScript)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40e1eafd-3515-488c-9512-7de0cf84533f",
+              "name": "email_draft",
+              "value": "Good news! As a Premium member, we have applied your annual fee waiver. A replacement card is being shipped to you free of charge.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        -80
+      ],
+      "id": "a8244767-9b37-4c2c-b1ac-44a9a3324420",
+      "name": "Auto-Approve Draft"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "762e2b29-fc32-4bd9-8c86-8cbdad620dee",
+              "name": "email_draft",
+              "value": "We received your replacement request. It looks like you've already utilized your free annual replacement. To expedite your new card, please pay the standard $25 replacement fee here: https://buy.stripe.com/mock-payment-link-123",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        80
+      ],
+      "id": "496f1fc3-eb4d-47ed-9fbc-a881ca0bdf63",
+      "name": "Payment Required Draft"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a8e81a89-0043-4a60-b9ea-99005159ee26",
+              "leftValue": "={{ $json.waiver_count }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "3ddeaa1b-f6c1-4282-a430-eaa246c7a467",
+      "name": "Policy Check: Waivers < 1?"
+    },
+    {
+      "parameters": {
+        "operation": "incr",
+        "key": "=rate_limit_{{ $('Gmail Trigger').first().json.sender || $('Webhook').first().json.body.email }}",
+        "expire": true,
+        "ttl": "={{ 1 }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "83a94be8-5e45-409e-b44f-7da4d12300f3",
+      "name": "Redis: Rate Limiter",
+      "credentials": {
+        "redis": {
+          "id": "S2HOoj9sjG1WwwhN",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) AS waiver_count \nFROM transactions \nWHERE customer_id = 'TCK-9999' AND fee_waived = FALSE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        848,
+        0
+      ],
+      "id": "40089cd4-ae87-4caf-80c2-ee3e56a9f35b",
+      "name": "Postgres DB: Fetch Waiver History",
+      "credentials": {
+        "postgres": {
+          "id": "AsKIkXNRo9n27gws",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -554,8 +493,8 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Ticket ID": "={{ $('JavaScript Code').item.json.ticket_id }}",
-            "Tier": "={{ $('JavaScript Code').item.json.customer_tier }}"
+            "Ticket ID": "={{ $('Normalize Payload (JavaScript)').item.json.ticket_id }}",
+            "Tier": "={{ $('Normalize Payload (JavaScript)').item.json.customer_tier }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -586,11 +525,11 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        2256,
+        2160,
         -16
       ],
       "id": "8a23b929-7e12-4462-abc3-2931e6b448ff",
-      "name": "Append row in sheet",
+      "name": "Central Audit Log",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "JMJvnd90RzDbhnEj",
@@ -600,43 +539,125 @@
     },
     {
       "parameters": {
-        "operation": "incr",
-        "key": "=rate_limit_{{ $('Gmail Trigger').first().json.sender || $('Webhook').first().json.body.email }}",
-        "expire": true,
-        "ttl": "={{ 1 }}"
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search for banking compliance policies regarding expedited shipping fees and temporary address fraud verification requirements.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "=banking_sops",
+          "mode": "id"
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.redis",
-      "typeVersion": 1,
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
       "position": [
-        -112,
-        0
+        288,
+        -288
       ],
-      "id": "83a94be8-5e45-409e-b44f-7da4d12300f3",
-      "name": "Redis",
+      "id": "84fcd349-a95f-405e-b0f4-c3c17fe9251a",
+      "name": "RAG: Search Banking SOPs",
       "credentials": {
-        "redis": {
-          "id": "S2HOoj9sjG1WwwhN",
-          "name": "Redis account"
+        "qdrantApi": {
+          "id": "s3pptKvvFUqjc5xh",
+          "name": "Qdrant account"
         }
-      },
-      "onError": "continueRegularOutput"
+      }
     },
     {
       "parameters": {
-        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Premium\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a2ea396-80a5-4460-a133-85ede7eafe17",
+              "name": "sop_text",
+              "value": "STANDARD OPERATING PROCEDURE: EXPEDITED CARD REPLACEMENT Policy ID: CRM-SOP-092  Standard Tier Customers: Standard tier customers requesting an expedited replacement card to their primary billing address are subject to a $25.00 USD expedited shipping fee. If the customer is traveling and requesting shipment to a temporary address (e.g., a hotel), the $25.00 fee applies, and the agent MUST collect the Hotel Name, Room Number, and Checkout Date for fraud prevention.  Premium Tier Customers: Premium tier customers receive one (1) waived expedited shipping fee per calendar year. Shipping to temporary addresses requires the same fraud prevention data (Hotel Name, Room Number, Checkout Date).  VIP / Priority Concierge Customers: VIP customers have all expedited shipping fees waived automatically ($0.00). Replacement cards are shipped via Priority Overnight. No additional fraud checks are required for temporary addresses as VIPs utilize biometric app verification.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        608
+      ],
+      "id": "bd0a8399-5826-467c-8e83-eeea924b4aa1",
+      "name": "Banking SOP Document"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        464
+      ],
+      "id": "12d19c11-b2b3-466d-99f2-99648ab2a02f",
+      "name": "Document Loader"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "=banking_sops",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        608
+      ],
+      "id": "5f726df9-ab43-40c9-be12-1aabfa7b5087",
+      "name": "Vector DB: Upsert Knowledge Base",
+      "credentials": {
+        "qdrantApi": {
+          "id": "s3pptKvvFUqjc5xh",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        608
+      ],
+      "id": "c708f16d-e05f-42cb-89dd-6f8c719e51c5",
+      "name": "Ingestion Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "throw new Error(\"Downstream Database Unreachable\");"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        48,
-        0
+        -304,
+        1408
       ],
-      "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
-      "name": "JavaScript Code"
+      "id": "ed4cda83-9935-4fb8-8b20-7a2062a866cd",
+      "name": "SYSTEM FAILURE"
     }
   ],
   "pinData": {
-    "Redis": [
+    "Postgres DB: Fetch Waiver History": [
+      {
+        "json": {
+          "waiver_count": "0"
+        }
+      }
+    ],
+    "Redis: Rate Limiter": [
       {
         "json": {
           "result": 2
@@ -649,7 +670,7 @@
       "main": [
         [
           {
-            "node": "Redis",
+            "node": "Redis: Rate Limiter",
             "type": "main",
             "index": 0
           }
@@ -678,55 +699,11 @@
         ]
       ]
     },
-    "Qdrant Vector Store": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Qdrant Vector Store1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Default Data Loader": {
-      "ai_document": [
-        [
-          {
-            "node": "Qdrant Vector Store1",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Embeddings Google Gemini": {
       "ai_embedding": [
         [
           {
-            "node": "Qdrant Vector Store1",
+            "node": "Vector DB: Upsert Knowledge Base",
             "type": "ai_embedding",
             "index": 0
           }
@@ -744,7 +721,7 @@
         ],
         [
           {
-            "node": "Postgres",
+            "node": "Postgres DB: Fetch Waiver History",
             "type": "main",
             "index": 0
           }
@@ -758,51 +735,11 @@
         ]
       ]
     },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Edit Fields2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "Generate Shipping Label",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields2": {
-      "main": [
-        [
-          {
-            "node": "Generate Shipping Label",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Gmail Trigger": {
       "main": [
         [
           {
-            "node": "Redis",
+            "node": "Redis: Rate Limiter",
             "type": "main",
             "index": 0
           }
@@ -824,19 +761,8 @@
       "ai_embedding": [
         [
           {
-            "node": "Qdrant Vector Store",
+            "node": "RAG: Search Banking SOPs",
             "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
             "index": 0
           }
         ]
@@ -857,7 +783,7 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "Central Audit Log",
             "type": "main",
             "index": 0
           }
@@ -868,7 +794,7 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "Central Audit Log",
             "type": "main",
             "index": 0
           }
@@ -879,25 +805,14 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "Central Audit Log",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Redis": {
-      "main": [
-        [
-          {
-            "node": "JavaScript Code",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "JavaScript Code": {
+    "Normalize Payload (JavaScript)": {
       "main": [
         [
           {
@@ -907,15 +822,129 @@
           }
         ]
       ]
+    },
+    "Auto-Approve Draft": {
+      "main": [
+        [
+          {
+            "node": "Generate Shipping Label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payment Required Draft": {
+      "main": [
+        [
+          {
+            "node": "Generate Shipping Label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Check: Waivers < 1?": {
+      "main": [
+        [
+          {
+            "node": "Auto-Approve Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Payment Required Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis: Rate Limiter": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload (JavaScript)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres DB: Fetch Waiver History": {
+      "main": [
+        [
+          {
+            "node": "Policy Check: Waivers < 1?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG: Search Banking SOPs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Banking SOP Document": {
+      "main": [
+        [
+          {
+            "node": "Vector DB: Upsert Knowledge Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Vector DB: Upsert Knowledge Base",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ingestion Workflow": {
+      "main": [
+        [
+          {
+            "node": "Banking SOP Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SYSTEM FAILURE": {
+      "main": [
+        []
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "aQ4pRJ43HvubpN2W",
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "167a0319-4e19-41c4-9724-a8322b9f85d4",
+  "versionId": "bfe1960a-088e-43d2-ada0-674c848bd388",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0f07ac9dd38414895ff9b2677eb3473800369330d6fcada6ff2b29726df910b1"
