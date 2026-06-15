@@ -42,7 +42,7 @@
       "typeVersion": 1.1,
       "position": [
         208,
-        224
+        176
       ],
       "id": "2ebdedf0-8b57-47ee-b708-a8548a5f0d89",
       "name": "Google Gemini Chat Model",
@@ -139,7 +139,7 @@
       "typeVersion": 3.4,
       "position": [
         560,
-        0
+        -16
       ],
       "id": "081800de-33b0-49b4-a41a-32f52999f38e",
       "name": "Switch"
@@ -158,8 +158,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
-        336,
-        224
+        288,
+        -256
       ],
       "id": "84fcd349-a95f-405e-b0f4-c3c17fe9251a",
       "name": "Qdrant Vector Store",
@@ -175,7 +175,7 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -16,
+        -192,
         608
       ],
       "id": "c708f16d-e05f-42cb-89dd-6f8c719e51c5",
@@ -198,7 +198,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
+        0,
         608
       ],
       "id": "bd0a8399-5826-467c-8e83-eeea924b4aa1",
@@ -217,7 +217,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
-        464,
+        208,
         608
       ],
       "id": "5f726df9-ab43-40c9-be12-1aabfa7b5087",
@@ -236,8 +236,8 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        608,
-        816
+        256,
+        464
       ],
       "id": "12d19c11-b2b3-466d-99f2-99648ab2a02f",
       "name": "Default Data Loader"
@@ -247,7 +247,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        432,
+        208,
         800
       ],
       "id": "a5713cd7-054f-4c31-a6fc-64f3cd468354",
@@ -256,158 +256,6 @@
         "googlePalmApi": {
           "id": "AvuxrXZcJfalJN27",
           "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        336,
-        384
-      ],
-      "id": "f3aa439a-8a31-4689-ae9e-a397c081591d",
-      "name": "Embeddings Google Gemini1",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "AvuxrXZcJfalJN27",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ $json.output }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        928,
-        368
-      ],
-      "id": "1d91a286-0c8d-4d6d-8d40-f643c4eb037f",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {
-        "resume": "webhook",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        1152,
-        -224
-      ],
-      "id": "9158b88a-660d-4760-ae13-ca49da8d3f21",
-      "name": "Wait",
-      "webhookId": "9c245457-8bbb-4aed-9656-ad71a6716e3e"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"alert\": \"VIP Customer Requires Approval\",\n  \"customer_tier\": \"VIP\",\n  \"ai_drafted_reply\": \"{{ JSON.parse($json.output).draft_reply }}\",\n  \"approve_link\": \"{{ $execution.resumeUrl }}?action=approve\",\n  \"reject_link\": \"{{ $execution.resumeUrl }}?action=reject\"\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        928,
-        -224
-      ],
-      "id": "43111982-aab2-4d4e-b473-50bd0a52b9ae",
-      "name": "HTTP Request1"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.query.action }}",
-                    "rightValue": "approve",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "0d74df97-68bd-48d9-937d-af496612d560"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "11802dd6-73da-4b0e-bfaf-a76bdf210a19",
-                    "leftValue": "={{ $json.query.action }}",
-                    "rightValue": "reject",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        1424,
-        -224
-      ],
-      "id": "7a9ad7be-314b-46d3-a919-afa87351b883",
-      "name": "Switch1"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT COUNT(*) AS waiver_count \nFROM transactions \nWHERE customer_id = 'TCK-9999' AND fee_waived = FALSE;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        912,
-        16
-      ],
-      "id": "40089cd4-ae87-4caf-80c2-ee3e56a9f35b",
-      "name": "Execute a SQL query",
-      "credentials": {
-        "postgres": {
-          "id": "AsKIkXNRo9n27gws",
-          "name": "Postgres account"
         }
       }
     },
@@ -439,8 +287,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1136,
-        32
+        1024,
+        0
       ],
       "id": "3ddeaa1b-f6c1-4282-a430-eaa246c7a467",
       "name": "If"
@@ -462,29 +310,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1408,
-        -16
+        1264,
+        -80
       ],
       "id": "a8244767-9b37-4c2c-b1ac-44a9a3324420",
       "name": "Edit Fields1"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"customer_notification\": \"{{ $json.email_draft }}\"\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1632,
-        48
-      ],
-      "id": "7ef2f930-d18b-4fc8-85cc-c077aadcc1d9",
-      "name": "HTTP Request2"
     },
     {
       "parameters": {
@@ -503,8 +333,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1408,
-        176
+        1264,
+        80
       ],
       "id": "496f1fc3-eb4d-47ed-9fbc-a881ca0bdf63",
       "name": "Edit Fields2"
@@ -539,7 +369,7 @@
     },
     {
       "parameters": {
-        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Premium\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
+        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Standard\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -549,6 +379,230 @@
       ],
       "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"api_action\": \"create_shipment\",\n  \"reference_ticket\": \"{{ $('Code in JavaScript').item.json.ticket_id }}\",\n  \"customer_tier\": \"{{ $('Code in JavaScript').item.json.customer_tier }}\",\n  \"logistics\": {\n    \"carrier\": \"FedEx\",\n    \"shipping_speed\": \"{{ $('Code in JavaScript').item.json.customer_tier === 'Premium' ? 'Priority_Overnight' : 'Standard_Ground' }}\",\n    \"signature_required\": true\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "7ef2f930-d18b-4fc8-85cc-c077aadcc1d9",
+      "name": "Generate Shipping Label"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: Support Request - {{ $('Code in JavaScript').item.json.ticket_id }}",
+        "message": "={{ JSON.parse($('AI Agent').first().json.output).draft_reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        272
+      ],
+      "id": "693046d2-bcad-48b0-bb47-e6db8bdf3e14",
+      "name": "Create a draft",
+      "webhookId": "af0ace17-12a8-4af0-a6b3-a53f1897b978",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "SkHWC8g3dW7UEkZl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+16235213727",
+        "to": "+16235213727",
+        "message": "=Premium Alert: Your replacement card ({{ $('Code in JavaScript').item.json.ticket_id }}) has been shipped via Priority Overnight.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "4537e46b-bdb5-4a9c-85a1-dac8ba4f0f7a",
+      "name": "Twilio (SMS)",
+      "credentials": {
+        "twilioApi": {
+          "id": "xoTSieVthxGNFk0I",
+          "name": "Twilio account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -112
+      ],
+      "id": "f3aa439a-8a31-4689-ae9e-a397c081591d",
+      "name": "Embeddings",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AvuxrXZcJfalJN27",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#agentic-stuff",
+          "mode": "name"
+        },
+        "text": "=*VIP ESCALATION* Ticket ID: {{ JSON.parse($json.output).ticket_id }} Tier: {{ $('Code in JavaScript').item.json.customer_tier }} Message: {{ $('Code in JavaScript').item.json.message }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        864,
+        -240
+      ],
+      "id": "ab29f95b-c1c5-42f9-803b-f60f842bdb31",
+      "name": "Slack (Instant Message to Employee)",
+      "webhookId": "a325473f-8aa7-4fee-9435-783406835ac9",
+      "credentials": {
+        "slackApi": {
+          "id": "v3nBJd8lilh7yOvZ",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) AS waiver_count \nFROM transactions \nWHERE customer_id = 'TCK-9999' AND fee_waived = FALSE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        848,
+        0
+      ],
+      "id": "40089cd4-ae87-4caf-80c2-ee3e56a9f35b",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "AsKIkXNRo9n27gws",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "={{ $('Gmail Trigger').item.json.id }}",
+          "mode": "id"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "={{ $('Gmail Trigger').item.json.labels[2].id }}",
+          "mode": "id"
+        },
+        "summary": "=Support Request: {{ $('Code in JavaScript').item.json.ticket_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        848,
+        272
+      ],
+      "id": "c284da8a-cbdc-43a8-a80f-79e7ddc801f6",
+      "name": "JIRA ticket",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "RVjzJSF5JWFcOjMo",
+          "name": "Jira SW Cloud account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Y3FKJvGgEzF1YJQiBWW0w47jSg7kk4cX1olqLEE9QQY",
+          "mode": "list",
+          "cachedResultName": "Audit Log CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y3FKJvGgEzF1YJQiBWW0w47jSg7kk4cX1olqLEE9QQY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y3FKJvGgEzF1YJQiBWW0w47jSg7kk4cX1olqLEE9QQY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Ticket ID": "={{ $('Code in JavaScript').item.json.ticket_id }}",
+            "Tier": "={{ $('Code in JavaScript').item.json.customer_tier }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Ticket ID",
+              "displayName": "Ticket ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tier",
+              "displayName": "Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2256,
+        -16
+      ],
+      "id": "8a23b929-7e12-4462-abc3-2931e6b448ff",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JMJvnd90RzDbhnEj",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -641,69 +695,25 @@
         ]
       ]
     },
-    "Embeddings Google Gemini1": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Qdrant Vector Store",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch": {
       "main": [
         [
           {
-            "node": "HTTP Request1",
+            "node": "Slack (Instant Message to Employee)",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Execute a SQL query",
+            "node": "Postgres",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request1": {
-      "main": [
-        [
-          {
-            "node": "Wait",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait": {
-      "main": [
-        [
-          {
-            "node": "Switch1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute a SQL query": {
-      "main": [
-        [
-          {
-            "node": "If",
+            "node": "JIRA ticket",
             "type": "main",
             "index": 0
           }
@@ -732,7 +742,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request2",
+            "node": "Generate Shipping Label",
             "type": "main",
             "index": 0
           }
@@ -743,7 +753,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request2",
+            "node": "Generate Shipping Label",
             "type": "main",
             "index": 0
           }
@@ -771,6 +781,83 @@
           }
         ]
       ]
+    },
+    "Generate Shipping Label": {
+      "main": [
+        [
+          {
+            "node": "Twilio (SMS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JIRA ticket": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack (Instant Message to Employee)": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twilio (SMS)": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -779,7 +866,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "3cdb6002-668a-45e2-b236-b65466538b1d",
+  "versionId": "f9ee57d0-d3b9-4e02-b449-631d638d1027",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0f07ac9dd38414895ff9b2677eb3473800369330d6fcada6ff2b29726df910b1"
