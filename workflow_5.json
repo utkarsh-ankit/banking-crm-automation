@@ -5,17 +5,24 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "e903ba99-6c8d-4f40-8808-47136b1f817c",
+        "authentication": "headerAuth",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -176,
-        -128
+        -304,
+        -160
       ],
       "id": "740c68e9-4938-4d7b-bea4-54e888d057d4",
       "name": "Webhook",
-      "webhookId": "e903ba99-6c8d-4f40-8808-47136b1f817c"
+      "webhookId": "e903ba99-6c8d-4f40-8808-47136b1f817c",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "O8CbABp2qs4hYl0X",
+          "name": "Header Auth account"
+        }
+      }
     },
     {
       "parameters": {
@@ -355,8 +362,8 @@
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1.4,
       "position": [
-        -176,
-        160
+        -320,
+        144
       ],
       "id": "8e180afb-3288-4bd9-bd61-353843e32f20",
       "name": "Gmail Trigger",
@@ -369,24 +376,11 @@
     },
     {
       "parameters": {
-        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Standard\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        16,
-        0
-      ],
-      "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"api_action\": \"create_shipment\",\n  \"reference_ticket\": \"{{ $('Code in JavaScript').item.json.ticket_id }}\",\n  \"customer_tier\": \"{{ $('Code in JavaScript').item.json.customer_tier }}\",\n  \"logistics\": {\n    \"carrier\": \"FedEx\",\n    \"shipping_speed\": \"{{ $('Code in JavaScript').item.json.customer_tier === 'Premium' ? 'Priority_Overnight' : 'Standard_Ground' }}\",\n    \"signature_required\": true\n  }\n}",
+        "jsonBody": "={\n  \"api_action\": \"create_shipment\",\n  \"reference_ticket\": \"{{ $('JavaScript Code').item.json.ticket_id }}\",\n  \"customer_tier\": \"{{ $('JavaScript Code').item.json.customer_tier }}\",\n  \"logistics\": {\n    \"carrier\": \"FedEx\",\n    \"shipping_speed\": \"{{ $('JavaScript Code').item.json.customer_tier === 'Premium' ? 'Priority_Overnight' : 'Standard_Ground' }}\",\n    \"signature_required\": true\n  }\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -401,7 +395,7 @@
     {
       "parameters": {
         "resource": "draft",
-        "subject": "=Re: Support Request - {{ $('Code in JavaScript').item.json.ticket_id }}",
+        "subject": "=Re: Support Request - {{ $('JavaScript Code').item.json.ticket_id }}",
         "message": "={{ JSON.parse($('AI Agent').first().json.output).draft_reply }}",
         "options": {}
       },
@@ -425,7 +419,7 @@
       "parameters": {
         "from": "+16235213727",
         "to": "+16235213727",
-        "message": "=Premium Alert: Your replacement card ({{ $('Code in JavaScript').item.json.ticket_id }}) has been shipped via Priority Overnight.",
+        "message": "=Premium Alert: Your replacement card ({{ $('JavaScript Code').item.json.ticket_id }}) has been shipped via Priority Overnight.",
         "options": {}
       },
       "type": "n8n-nodes-base.twilio",
@@ -469,7 +463,7 @@
           "value": "#agentic-stuff",
           "mode": "name"
         },
-        "text": "=*VIP ESCALATION* Ticket ID: {{ JSON.parse($json.output).ticket_id }} Tier: {{ $('Code in JavaScript').item.json.customer_tier }} Message: {{ $('Code in JavaScript').item.json.message }}",
+        "text": "=*VIP ESCALATION* Ticket ID: {{ JSON.parse($json.output).ticket_id }} Tier: {{ $('JavaScript Code').item.json.customer_tier }} Message: {{ $('JavaScript Code').item.json.message }}",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
@@ -521,7 +515,7 @@
           "value": "={{ $('Gmail Trigger').item.json.labels[2].id }}",
           "mode": "id"
         },
-        "summary": "=Support Request: {{ $('Code in JavaScript').item.json.ticket_id }}",
+        "summary": "=Support Request: {{ $('JavaScript Code').item.json.ticket_id }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.jira",
@@ -560,8 +554,8 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Ticket ID": "={{ $('Code in JavaScript').item.json.ticket_id }}",
-            "Tier": "={{ $('Code in JavaScript').item.json.customer_tier }}"
+            "Ticket ID": "={{ $('JavaScript Code').item.json.ticket_id }}",
+            "Tier": "={{ $('JavaScript Code').item.json.customer_tier }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -603,15 +597,59 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "incr",
+        "key": "=rate_limit_{{ $('Gmail Trigger').first().json.sender || $('Webhook').first().json.body.email }}",
+        "expire": true,
+        "ttl": "={{ 1 }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "83a94be8-5e45-409e-b44f-7da4d12300f3",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "S2HOoj9sjG1WwwhN",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Premium\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
+      "name": "JavaScript Code"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Redis": [
+      {
+        "json": {
+          "result": 2
+        }
+      }
+    ]
+  },
   "connections": {
     "Webhook": {
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Redis",
             "type": "main",
             "index": 0
           }
@@ -764,18 +802,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
+            "node": "Redis",
             "type": "main",
             "index": 0
           }
@@ -858,6 +885,28 @@
           }
         ]
       ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "JavaScript Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JavaScript Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -866,7 +915,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "f9ee57d0-d3b9-4e02-b449-631d638d1027",
+  "versionId": "167a0319-4e19-41c4-9724-a8322b9f85d4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0f07ac9dd38414895ff9b2677eb3473800369330d6fcada6ff2b29726df910b1"
