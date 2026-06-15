@@ -1,0 +1,790 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e903ba99-6c8d-4f40-8808-47136b1f817c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        -128
+      ],
+      "id": "740c68e9-4938-4d7b-bea4-54e888d057d4",
+      "name": "Webhook",
+      "webhookId": "e903ba99-6c8d-4f40-8808-47136b1f817c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please process this incoming customer support ticket:\n\nTicket ID: {{ $json.ticket_id }}\nCustomer Tier: {{ $json.customer_tier }}\nMessage: {{ $json.message }}",
+        "options": {
+          "systemMessage": "Return your final analysis ONLY as a JSON object with the following keys. Do not include any markdown formatting, backticks, or extra conversational text.\n\n{\n  \"ticket_id\": \"string\",\n  \"urgency\": \"High\" | \"Medium\" | \"Low\",\n  \"suggested_routing\": \"Priority Concierge\" | \"Premium\" | \"Standard\",\n  \"fee_waived\": true | false,\n  \"required_verification\": [\"item1\", \"item2\"],\n  \"draft_reply\": \"string\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "019250da-f33d-4d4c-9504-fc944a7f1a13",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        224
+      ],
+      "id": "2ebdedf0-8b57-47ee-b708-a8548a5f0d89",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KdFFpdNJ8CFpROck",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.output).suggested_routing }}",
+                    "rightValue": "Priority Concierge",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7e907aee-c1df-4ef1-a222-408ca37b860b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VIP Track"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "124b672d-8eda-4743-8177-2ddff85982a7",
+                    "leftValue": "={{ JSON.parse($json.output).suggested_routing }}",
+                    "rightValue": "Premium",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Premium Track"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "056b174f-7026-4926-9767-d1515244ef9a",
+                    "leftValue": "={{ JSON.parse($json.output).suggested_routing }}",
+                    "rightValue": "Standard",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Standard Track"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "081800de-33b0-49b4-a41a-32f52999f38e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search for banking compliance policies regarding expedited shipping fees and temporary address fraud verification requirements.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "=banking_sops",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        224
+      ],
+      "id": "84fcd349-a95f-405e-b0f4-c3c17fe9251a",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "s3pptKvvFUqjc5xh",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        608
+      ],
+      "id": "c708f16d-e05f-42cb-89dd-6f8c719e51c5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a2ea396-80a5-4460-a133-85ede7eafe17",
+              "name": "sop_text",
+              "value": "STANDARD OPERATING PROCEDURE: EXPEDITED CARD REPLACEMENT Policy ID: CRM-SOP-092  Standard Tier Customers: Standard tier customers requesting an expedited replacement card to their primary billing address are subject to a $25.00 USD expedited shipping fee. If the customer is traveling and requesting shipment to a temporary address (e.g., a hotel), the $25.00 fee applies, and the agent MUST collect the Hotel Name, Room Number, and Checkout Date for fraud prevention.  Premium Tier Customers: Premium tier customers receive one (1) waived expedited shipping fee per calendar year. Shipping to temporary addresses requires the same fraud prevention data (Hotel Name, Room Number, Checkout Date).  VIP / Priority Concierge Customers: VIP customers have all expedited shipping fees waived automatically ($0.00). Replacement cards are shipped via Priority Overnight. No additional fraud checks are required for temporary addresses as VIPs utilize biometric app verification.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        608
+      ],
+      "id": "bd0a8399-5826-467c-8e83-eeea924b4aa1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "=banking_sops",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        608
+      ],
+      "id": "5f726df9-ab43-40c9-be12-1aabfa7b5087",
+      "name": "Qdrant Vector Store1",
+      "credentials": {
+        "qdrantApi": {
+          "id": "s3pptKvvFUqjc5xh",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        816
+      ],
+      "id": "12d19c11-b2b3-466d-99f2-99648ab2a02f",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        432,
+        800
+      ],
+      "id": "a5713cd7-054f-4c31-a6fc-64f3cd468354",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AvuxrXZcJfalJN27",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        336,
+        384
+      ],
+      "id": "f3aa439a-8a31-4689-ae9e-a397c081591d",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AvuxrXZcJfalJN27",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        368
+      ],
+      "id": "1d91a286-0c8d-4d6d-8d40-f643c4eb037f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        -224
+      ],
+      "id": "9158b88a-660d-4760-ae13-ca49da8d3f21",
+      "name": "Wait",
+      "webhookId": "9c245457-8bbb-4aed-9656-ad71a6716e3e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"alert\": \"VIP Customer Requires Approval\",\n  \"customer_tier\": \"VIP\",\n  \"ai_drafted_reply\": \"{{ JSON.parse($json.output).draft_reply }}\",\n  \"approve_link\": \"{{ $execution.resumeUrl }}?action=approve\",\n  \"reject_link\": \"{{ $execution.resumeUrl }}?action=reject\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        -224
+      ],
+      "id": "43111982-aab2-4d4e-b473-50bd0a52b9ae",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.query.action }}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0d74df97-68bd-48d9-937d-af496612d560"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "11802dd6-73da-4b0e-bfaf-a76bdf210a19",
+                    "leftValue": "={{ $json.query.action }}",
+                    "rightValue": "reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        -224
+      ],
+      "id": "7a9ad7be-314b-46d3-a919-afa87351b883",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) AS waiver_count \nFROM transactions \nWHERE customer_id = 'TCK-9999' AND fee_waived = FALSE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        912,
+        16
+      ],
+      "id": "40089cd4-ae87-4caf-80c2-ee3e56a9f35b",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "AsKIkXNRo9n27gws",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a8e81a89-0043-4a60-b9ea-99005159ee26",
+              "leftValue": "={{ $json.waiver_count }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        32
+      ],
+      "id": "3ddeaa1b-f6c1-4282-a430-eaa246c7a467",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40e1eafd-3515-488c-9512-7de0cf84533f",
+              "name": "email_draft",
+              "value": "Good news! As a Premium member, we have applied your annual fee waiver. A replacement card is being shipped to you free of charge.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        -16
+      ],
+      "id": "a8244767-9b37-4c2c-b1ac-44a9a3324420",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.site/77fb9407-5dd2-40b5-97b7-e8f76752a411",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customer_notification\": \"{{ $json.email_draft }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1632,
+        48
+      ],
+      "id": "7ef2f930-d18b-4fc8-85cc-c077aadcc1d9",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "762e2b29-fc32-4bd9-8c86-8cbdad620dee",
+              "name": "email_draft",
+              "value": "We received your replacement request. It looks like you've already utilized your free annual replacement. To expedite your new card, please pay the standard $25 replacement fee here: https://buy.stripe.com/mock-payment-link-123",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        176
+      ],
+      "id": "496f1fc3-eb4d-47ed-9fbc-a881ca0bdf63",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "q": "subject:\"Ticket\""
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -176,
+        160
+      ],
+      "id": "8e180afb-3288-4bd9-bd61-353843e32f20",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "SkHWC8g3dW7UEkZl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let processedMessage, generatedTicketId, assignedTier;\n\n// ROUTING LOGIC: Webhook or Gmail\nif ($input.item.json.body) {\n  // WEBHOOK\n  processedMessage = $input.item.json.body.message;\n  generatedTicketId = $input.item.json.body.ticket_id;\n  assignedTier = $input.item.json.body.customer_tier;\n  \n} else {\n  // GMAIL \n  processedMessage = $input.item.json.snippet || \"\";\n  generatedTicketId = `TCK-${Math.floor(1000 + Math.random() * 9000)}`;\n  assignedTier = \"Premium\"; // Hardcoded for this demo track\n}\n\n// Return\nreturn {\n  json: {\n    message: processedMessage,\n    ticket_id: generatedTicketId,\n    customer_tier: assignedTier\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        0
+      ],
+      "id": "fa9afde6-efa0-42f3-a898-38ea11803e67",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3cdb6002-668a-45e2-b236-b65466538b1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0f07ac9dd38414895ff9b2677eb3473800369330d6fcada6ff2b29726df910b1"
+  },
+  "nodeGroups": [],
+  "id": "O77lNpy4ydQWd1ud",
+  "tags": []
+}
